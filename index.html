@@ -2,182 +2,21 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Arcade Enemy Smash</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body {
-    margin: 0;
-    background: black;
-    font-family: 'Courier New', monospace;
-    color: #00ffcc;
-    text-align: center;
-}
-
-h1 {
-    margin: 15px;
-    text-shadow: 0 0 20px #00ffcc;
-}
-
-#gameArea {
-    width: 340px;
-    height: 340px;
-    margin: 20px auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.hole {
-    width: 100px;
-    height: 100px;
-    background: #111;
-    border: 3px solid #00ffcc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    cursor: pointer;
-    transition: 0.1s;
-}
-
-.enemy {
-    animation: pop 0.2s ease;
-}
-
-@keyframes pop {
-    from { transform: scale(0); }
-    to { transform: scale(1); }
-}
-
-.stats {
-    margin-top: 10px;
-}
-
-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 18px;
-    background: #00ffcc;
-    border: none;
-    cursor: pointer;
-}
-</style>
+<title>Neon Space Assault</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<h1>👾 ARCADE ENEMY SMASH</h1>
+<h1>🚀 NEON SPACE ASSAULT</h1>
+<canvas id="gameCanvas"></canvas>
 
-<div id="gameArea"></div>
-
-<div class="stats">
-    <p id="score">Punkte: 0</p>
-    <p id="lives">Leben: ❤️❤️❤️</p>
+<div id="ui">
+    <p id="score">Score: 0</p>
+    <p id="lives">Lives: 3</p>
+    <p id="level">Level: 1</p>
     <p id="highscore">Highscore: 0</p>
 </div>
 
-<button onclick="startGame()">START</button>
-
-<script>
-const gameArea = document.getElementById("gameArea");
-const scoreDisplay = document.getElementById("score");
-const livesDisplay = document.getElementById("lives");
-const highscoreDisplay = document.getElementById("highscore");
-
-let score = 0;
-let lives = 3;
-let speed = 1000;
-let gameInterval;
-let highscore = localStorage.getItem("enemyHighscore") || 0;
-
-highscoreDisplay.textContent = "Highscore: " + highscore;
-
-// Sound
-function beep(freq, duration){
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = freq;
-    osc.type = "square";
-    osc.start();
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration/1000);
-    setTimeout(()=>{osc.stop();ctx.close();}, duration);
-}
-
-// Spielfeld erstellen
-for(let i=0;i<9;i++){
-    const hole = document.createElement("div");
-    hole.classList.add("hole");
-    hole.dataset.index = i;
-    hole.onclick = hitEnemy;
-    gameArea.appendChild(hole);
-}
-
-function startGame(){
-    score = 0;
-    lives = 3;
-    speed = 1000;
-    updateUI();
-    clearInterval(gameInterval);
-    gameInterval = setInterval(spawnEnemy, speed);
-}
-
-function spawnEnemy(){
-    const holes = document.querySelectorAll(".hole");
-    holes.forEach(h=>h.textContent="");
-
-    const randomHole = holes[Math.floor(Math.random()*holes.length)];
-    randomHole.textContent = "👾";
-    randomHole.classList.add("enemy");
-
-    setTimeout(()=>{
-        if(randomHole.textContent === "👾"){
-            randomHole.textContent="";
-            lives--;
-            beep(200,300);
-            updateUI();
-            if(lives<=0){
-                endGame();
-            }
-        }
-    }, speed-200);
-
-    if(speed>400){
-        speed -= 30;
-        clearInterval(gameInterval);
-        gameInterval = setInterval(spawnEnemy, speed);
-    }
-}
-
-function hitEnemy(){
-    if(this.textContent === "👾"){
-        this.textContent="";
-        score += 100;
-        beep(1000,150);
-        updateUI();
-    }
-}
-
-function updateUI(){
-    scoreDisplay.textContent = "Punkte: " + score;
-    livesDisplay.textContent = "Leben: " + "❤️".repeat(lives);
-}
-
-function endGame(){
-    clearInterval(gameInterval);
-    beep(100,500);
-    if(score > highscore){
-        highscore = score;
-        localStorage.setItem("enemyHighscore", highscore);
-        highscoreDisplay.textContent = "Highscore: " + highscore;
-    }
-    alert("Game Over! Punkte: " + score);
-}
-</script>
-
+<script src="game.js"></script>
 </body>
 </html>
