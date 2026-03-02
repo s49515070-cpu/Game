@@ -1,20 +1,21 @@
 body {
     margin: 0;
     background: black;
-    color: #00ffff;
     font-family: Arial, sans-serif;
     text-align: center;
+    color: #00ffff;
 }
 
 h1 {
     text-shadow: 0 0 20px #00ffff;
+    margin-top: 15px;
 }
 
 canvas {
     background: #000;
     border: 3px solid #00ffff;
     display: block;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
 #ui {
